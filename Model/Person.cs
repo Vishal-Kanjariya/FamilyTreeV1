@@ -10,6 +10,11 @@ namespace FamilyTreeV1.Model
         public int Id { get; set; }
 
         /// <summary>
+        /// PartnerIds
+        /// </summary>
+        public int[] PartnerIds { get; set; }
+
+        /// <summary>
         /// Father Id
         /// </summary>
         public int? FatherId { get; set; }
@@ -24,25 +29,25 @@ namespace FamilyTreeV1.Model
         /// </summary>
         [Required(ErrorMessage = "Name is required")]
         [StringLength(50, MinimumLength = 2, ErrorMessage = "Name must be between 2 and 50 characters")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         /// <summary>
         /// Surname
         /// </summary>
         [Required(ErrorMessage = "Surname is required")]
         [StringLength(50, MinimumLength = 2, ErrorMessage = "Surname must be between 2 and 50 characters")]
-        public string Surname { get; set; }
+        public string? Surname { get; set; }
 
         /// <summary>
         /// BirthDate
         /// </summary>
-        public DateTime BirthDate { get; set; }
+        public DateTime? BirthDate { get; set; }
 
         /// <summary>
         /// Identity Number
         /// </summary>
         [Required(ErrorMessage = "IdentityNumber is required")]
         [StringLength(50, MinimumLength = 2, ErrorMessage = "IdentityNumber must be between 2 and 50 characters")]
-        public string IdentityNumber { get; set; }
+        public string? IdentityNumber { get; set; }
     }
 }

@@ -10,12 +10,13 @@ using System.Xml.Linq;
 using static Azure.Core.HttpHeader;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
 namespace FamilyTreeV1.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class NewFamilyController : ControllerBase
+    public class UpdatedFamilyController : ControllerBase
     {
         /// <summary>
         /// Configuration object
@@ -26,7 +27,7 @@ namespace FamilyTreeV1.Controllers
         /// Constructor
         /// </summary>
         /// <param name="configuration"></param>
-        public NewFamilyController(IConfiguration configuration)
+        public UpdatedFamilyController(IConfiguration configuration)
         {
             _configuration = configuration;
         }
@@ -44,17 +45,7 @@ namespace FamilyTreeV1.Controllers
                 using SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
                 connection.Open();
 
-                // Get Partner List
-
-                using SqlCommand commandPartnerList = new SqlCommand("GetPartnerStoredProcedure", connection);
-                commandPartnerList.CommandType = CommandType.StoredProcedure;
-
-                SqlDataAdapter adapterPartnerList = new SqlDataAdapter(commandPartnerList);
-                DataSet dataSetPartnerList = new DataSet();
-                adapterPartnerList.Fill(dataSetPartnerList);
-
-                // Convert the DataSet to a list of MyData objects
-                List<Partner> dataPartnerList = ConvertPartnerDataSetToList(dataSetPartnerList);
+                List<int> ParentsIds = new List<int>();
 
                 //Get Descendants List
 
@@ -68,70 +59,41 @@ namespace FamilyTreeV1.Controllers
 
                 // Convert the DataSet to a list of MyData objects
                 List<Person> dataDescendantsList = ConvertDescendantsDataSetToList(dataSetDescendantsList);
-                List<Person> finalDescendantsList = new List<Person>();
+                List<TreeData> finalDescendantsList = new List<TreeData>();
 
 
                 foreach (Person descendant in dataDescendantsList)
                 {
-                    int descendantId = descendant.Id;
+                    TreeData familyMember = new TreeData();
 
-                    var WomenId = dataPartnerList.Where(x => x.FatherId == descendantId).Select(y => y.MotherId).FirstOrDefault();
+                    familyMember.key = descendant.Id;
+                    familyMember.name = descendant.Name;
+                    familyMember.gender = descendant.IdentityNumber;
 
-                    List<int> partnerIdsList = new List<int>();
-
-                    if (WomenId != null)
+                    if(ParentsIds == null || ParentsIds.Count == 0)
                     {
-                        // Add the new PartnerId to the list
-                        partnerIdsList.Add((int)WomenId);
+                        familyMember.parent = 0;
+                    }
+                    else
+                    {
+                        if(ParentsIds.Contains((int)descendant.FatherId))
+                        {
+                            familyMember.parent =  (int)descendant.FatherId;
+                        }
+                        else if (ParentsIds.Contains((int)descendant.MotherId))
+                        {
+                            familyMember.parent = (int)descendant.MotherId;
+                        }
+                        else
+                        {
+                            familyMember.parent = 0;
+                        }
                     }
 
-                    var ManId = dataPartnerList.Where(x => x.MotherId == descendantId).Select(y => y.FatherId).FirstOrDefault();
+                    ParentsIds.Add(descendant.Id);
 
-                    if (ManId != null)
-                    {
-                        // Add the new PartnerId to the list
-                        partnerIdsList.Add((int)ManId);
-                    }
-
-                    if(partnerIdsList != null && partnerIdsList.Count > 0)
-                    {
-                        // Convert the list back to an array and update the Person instance
-                        descendant.PartnerIds = partnerIdsList.ToArray();
-                    }
-                    
-
-                    finalDescendantsList.Add(descendant);
+                    finalDescendantsList.Add(familyMember);
                 }
-
-
-                /*
-
-                //////////////////////////////
-                foreach (var dp in dataPartnerList)
-                {
-                    int? ManId = dp.FatherId;
-                    int? WomenId = dp.MotherId;
-
-                    var DescendantItem1 = dataDescendantsList.Where(x => x.Id == ManId).FirstOrDefault();
-
-                    if (DescendantItem1 != null)
-                    {
-                        DescendantItem1.PartnerIds[0] = WomenId;
-
-                        finalDescendantsList.Add(DescendantItem1);
-                    }
-
-                    var DescendantItem2 = dataDescendantsList.Where(x => x.Id == WomenId).FirstOrDefault();
-
-                    if (DescendantItem2 != null)
-                    {
-                        DescendantItem2.PartnerIds[0] = ManId;
-
-                        finalDescendantsList.Add(DescendantItem2);
-                    }
-                }
-
-                */
                 
                 string json = JsonConvert.SerializeObject(finalDescendantsList, Formatting.Indented);
                 return Ok(json);
