@@ -105,60 +105,6 @@ namespace FamilyTreeV1.Controllers
         }
 
         /// <summary>
-        /// Get Root Ascendant by Identity Number of Person
-        /// </summary>
-        /// <param name="identityNumber"></param>
-        /// <returns> return Family list </returns>
-        [HttpGet("GetRootAscendant")]
-        public IActionResult GetRootAscendant(string identityNumber)
-        {
-            try
-            {
-                using SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
-                connection.Open();
-
-                using SqlCommand command = new SqlCommand("GetRootAscendantStoredProcedure", connection);
-                command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@IdentityNumber", identityNumber);
-
-                SqlDataAdapter adapter = new SqlDataAdapter(command);
-                DataSet dataSet = new DataSet();
-                adapter.Fill(dataSet);
-
-                string json = JsonConvert.SerializeObject(dataSet, Formatting.Indented);
-                return Ok(dataSet);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
-        }
-
-        /// <summary>
-        /// Convert Partner DataSet To List
-        /// </summary>
-        /// <param name="dataSet"></param>
-        /// <returns></returns>
-        private List<Partner> ConvertPartnerDataSetToList(DataSet dataSet)
-        {
-            // Assuming you have a class named MyData with properties matching your columns
-            List<Partner> dataList = new List<Partner>();
-
-            foreach (DataRow row in dataSet.Tables[0].Rows)
-            {
-                Partner data = new Partner
-                {
-                    FatherId = (string.IsNullOrEmpty(Convert.ToString(row["FatherId"]))) ? 0 : Convert.ToInt32(row["FatherId"]),
-                    MotherId = (string.IsNullOrEmpty(Convert.ToString(row["MotherId"]))) ? 0 : Convert.ToInt32(row["MotherId"])
-                };
-
-                dataList.Add(data);
-            }
-
-            return dataList;
-        }
-
-        /// <summary>
         /// Convert Partner DataSet To List
         /// </summary>
         /// <param name="dataSet"></param>

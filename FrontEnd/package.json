@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "gojs": "^2.3.14",
-    "gojs-angular": "^2.0.7"
-  }
-}

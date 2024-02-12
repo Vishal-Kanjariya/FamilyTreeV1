@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { GojsAngularModule } from 'gojs-angular';
 
 // Import your components
-
+import { AppComponent } from './app.component';
 import { HelloComponent } from './hello.component';
 
 @NgModule({
@@ -13,9 +13,9 @@ import { HelloComponent } from './hello.component';
   imports: [BrowserModule, FormsModule, GojsAngularModule],
   
   // Declare your components
-  declarations: [HelloComponent],
+  declarations: [AppComponent, HelloComponent],
   
   // Specify the bootstrap component
-  
+  bootstrap: [AppComponent]
 })
 export class AppModule { }
