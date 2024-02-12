@@ -1,6 +1,6 @@
 USE [master]
 GO
-/****** Object:  Database [FamilyTree]    Script Date: 02/09/2024 18:21:03 ******/
+/****** Object:  Database [FamilyTree]    Script Date: 02/12/2024 09:51:44 ******/
 CREATE DATABASE [FamilyTree]
  CONTAINMENT = NONE
  ON  PRIMARY 
@@ -80,7 +80,7 @@ ALTER DATABASE [FamilyTree] SET QUERY_STORE = OFF
 GO
 USE [FamilyTree]
 GO
-/****** Object:  Table [dbo].[Person]    Script Date: 02/09/2024 18:21:04 ******/
+/****** Object:  Table [dbo].[Person]    Script Date: 02/12/2024 09:51:44 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -131,7 +131,7 @@ INSERT [dbo].[Person] ([Id], [FatherId], [MotherId], [Name], [Surname], [BirthDa
 GO
 INSERT [dbo].[Person] ([Id], [FatherId], [MotherId], [Name], [Surname], [BirthDate], [IdentityNumber]) VALUES (16, 11, 12, N'G2', N'Surname-G2', CAST(N'2000-01-02' AS Date), N'G2')
 GO
-/****** Object:  StoredProcedure [dbo].[GetDescendantsStoredProcedure]    Script Date: 02/09/2024 18:21:04 ******/
+/****** Object:  StoredProcedure [dbo].[GetDescendantsStoredProcedure]    Script Date: 02/12/2024 09:51:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -179,7 +179,21 @@ BEGIN
     SELECT * FROM DescendantCTE
 END
 GO
-/****** Object:  StoredProcedure [dbo].[GetRootAscendantStoredProcedure]    Script Date: 02/09/2024 18:21:04 ******/
+/****** Object:  StoredProcedure [dbo].[GetPartnerStoredProcedure]    Script Date: 02/12/2024 09:51:45 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- GetPartnerStoredProcedure
+CREATE   PROCEDURE [dbo].[GetPartnerStoredProcedure]
+AS
+BEGIN
+    SELECT DISTINCT [FatherId], [MotherId]
+	FROM [FamilyTree].[dbo].[Person]
+END
+GO
+/****** Object:  StoredProcedure [dbo].[GetRootAscendantStoredProcedure]    Script Date: 02/12/2024 09:51:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
